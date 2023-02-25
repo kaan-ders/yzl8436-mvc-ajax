@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Ogrenci
+
+<h3>Öğrenci ekle</h3>
+
+<form class="mt-3" action="/Home/Ekle" method="post">
+    <div class="mb-3">
+        <label class="form-label">Adı Soyadı</label>
+        <input type="text" class="form-control" asp-for="Adi">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ülke</label>
+        <select asp-for="UlkeId" class="form-control" onchange="OnUlkeDegisti()">
+            <option value="">Seçiniz</option>
+            @foreach (Ulke item in ViewBag.Ulkeler)
+            {
+                <option value="@item.Id">@item.Adi</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Sehir</label>
+        <select asp-for="SehirId" class="form-control">
+            <option value="">Seçiniz</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
+
+@section Scripts {
+    <script>
+        function OnUlkeDegisti() {
+            var seciliUlkeId = $('#UlkeId').val();
+            $("#SehirId").empty();
+
+            $.ajax({
+                type: "GET",
+                url: "/Home/SehirGetir/" + seciliUlkeId,
+                success: function (data) {
+                    $.each(data, function (val, sehir) {
+                        $('#SehirId').append(
+                            $('<option></option>').val(sehir.id).html(sehir.adi)
+                        );
+                    });
+                },
+                error: function (req, status, error) {
+                    console.log(msg);
+                }
+            });
+        }
+    </script>
+}
